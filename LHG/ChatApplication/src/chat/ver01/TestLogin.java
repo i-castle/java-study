@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.TreeMap;
 
-public class LoginPage{
+public class TestLogin extends Thread{
     private static JFrame frame;
     private static JPanel panel;
     private static JLabel idLabel, passLabel, logStatusLabel;
@@ -20,11 +20,9 @@ public class LoginPage{
         return loginCheck;
     }
 
-    public static void setLoginCheck(boolean loginCheck) {
-        LoginPage.loginCheck = loginCheck;
-    }
 
-    public LoginPage(){
+
+    public TestLogin(){
         frame = new JFrame();
         panel = new JPanel();
         frame.setSize(350, 200);
@@ -32,7 +30,6 @@ public class LoginPage{
 
         frame.add(panel);
 
-        // cols, rows
         panel.setLayout(null);
 
         idLabel = new JLabel("아이디");
@@ -71,10 +68,10 @@ public class LoginPage{
             public void actionPerformed(ActionEvent e) {
                 // 파일이 존재할 경우
                 try {
-                    String path = System.getProperty("user.dir") + "\\db\\";
+                    String path = "C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt";
                     TreeMap<String, String> userList = new TreeMap<String, String>();
                     File file = new File(path);
-                    FileReader fr = new FileReader("C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt");
+                    FileReader fr = new FileReader(file);
                     BufferedReader reader = new BufferedReader(fr);
                     while(true){
                         String data = reader.readLine();
@@ -86,7 +83,7 @@ public class LoginPage{
                         if(id.equals(arr[0]) && passwd.equals(arr[1])){
                             System.out.println("로그인 성공!");
                             logStatusLabel.setText("로그인 되었습니다.");
-                            setLoginCheck(true);
+
                             if(getLoginCheck()==true){
                                 Server server = new Server();
                                 Client client = new Client();
@@ -118,7 +115,7 @@ public class LoginPage{
         });
     }
 
-    public static void main(String[] args) {
-        LoginPage loginPage = new LoginPage();
-    }
+//    public static void main(String[] args) {
+//        LoginPage loginPage = new LoginPage();
+//    }
 }

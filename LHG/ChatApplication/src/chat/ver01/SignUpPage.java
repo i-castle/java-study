@@ -17,7 +17,7 @@ public class SignUpPage {
 
     public SignUpPage(){
         frame = new JFrame();
-        frame.setSize(350, 200);
+        frame.setSize(500, 500);
         frame.setTitle("회원가입");
         // 현재 창 닫기
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -58,7 +58,7 @@ public class SignUpPage {
                 System.out.println("submit clicked");
                 try {
                     TreeMap<String, String> userList = new TreeMap<String, String>();
-                    File file = new File("/Users/ihangyeol/Desktop/j_study/LHG/db/test1.txt");
+                    File file = new File("C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt");
                     try{
                         FileReader fr = new FileReader(file);
                         BufferedReader reader = new BufferedReader(fr);
@@ -97,7 +97,7 @@ public class SignUpPage {
                             new LoginPage();
                         }
                     } catch (FileNotFoundException f){
-                        FileWriter fw = new FileWriter("/Users/ihangyeol/Desktop/j_study/LHG/db/test1.txt");
+                        FileWriter fw = new FileWriter("C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt");
                         Writer wr = new BufferedWriter(fw);
                         userList.put(id.getText(), passwd.getText());
                         wr.write(id.getText() +"/");

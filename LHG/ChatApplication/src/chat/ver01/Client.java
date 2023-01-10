@@ -10,7 +10,7 @@ public class Client {
     private JPanel panel;
 
     private static String id;
-    private static boolean loginCheck;
+    private static boolean loginCheck=true;
     public static String getId() {return id;}
     public static void setId(String id) {
         Client.id = id;
