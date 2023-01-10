@@ -58,7 +58,7 @@ public class SignUpPage {
                 System.out.println("submit clicked");
                 try {
                     TreeMap<String, String> userList = new TreeMap<String, String>();
-                    File file = new File("./db/test1.txt");
+                    File file = new File("/Users/ihangyeol/Desktop/j_study/LHG/db/test1.txt");
                     try{
                         FileReader fr = new FileReader(file);
                         BufferedReader reader = new BufferedReader(fr);
@@ -76,7 +76,7 @@ public class SignUpPage {
                             Set set = userList.entrySet();
                             Iterator iterator = set.iterator();
                             // 라인 단위 출력을 위해 PrintStream 사용
-                            FileWriter fw = new FileWriter("./db/test1.txt");
+                            FileWriter fw = new FileWriter(file);
                             PrintWriter pw = new PrintWriter(fw);
                             // 바이트 기반, 문자열 기반 둘 다 해도 되는데 뭔 차이?
 //                                FileOutputStream fos = newFileWriter("./db/test1.txt");
@@ -93,9 +93,11 @@ public class SignUpPage {
                             pw.flush();
                             pw.close();
                             System.out.println("회원가입 성공");
+                            frame.dispose();
+                            new LoginPage();
                         }
                     } catch (FileNotFoundException f){
-                        FileWriter fw = new FileWriter("./db/test1.txt");
+                        FileWriter fw = new FileWriter("/Users/ihangyeol/Desktop/j_study/LHG/db/test1.txt");
                         Writer wr = new BufferedWriter(fw);
                         userList.put(id.getText(), passwd.getText());
                         wr.write(id.getText() +"/");
