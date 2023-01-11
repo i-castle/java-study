@@ -1,6 +1,8 @@
 package chat.ver01;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -10,15 +12,21 @@ import java.util.TreeMap;
 
 public class TestClient{
     private static JFrame frame;
-    private static JPanel panel;
+    private static JPanel mainPanel, panel, panel2;
     private static JLabel idLabel, passLabel, logStatusLabel;
     private static JTextField idText;
     private static JPasswordField passwordText;
     private static JButton LoginBtn, SignUpBtn;
     private Socket socket;
-    private BufferedWriter bufferedWriter;
-    private BufferedReader bufferedReader;
+    private BufferedWriter bw;
+    private BufferedReader br;
     private String username;
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    private String nickname;
 
     public boolean isLoginStatus() {
         return loginStatus;
@@ -33,17 +41,24 @@ public class TestClient{
     }
     public TestClient(){
         frame = new JFrame();
-        panel = new JPanel();
-        frame.setSize(350, 200);
+        frame.setSize(700, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
 
-        frame.add(panel);
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel2 = new JPanel();
+        panel2.setLayout(new BorderLayout());
 
-        panel.setLayout(null);
+        mainPanel.add(panel, BorderLayout.WEST);
+        mainPanel.add(panel2, BorderLayout.EAST);
+
+        frame.add(mainPanel);
 
         idLabel = new JLabel("아이디");
         idLabel.setBounds(10, 20, 80, 25);
-        panel.add(idLabel);
+        panel.add(idLabel, BorderLayout.NORTH);
 
         // TextField, 매개값은 길이
         idText = new JTextField(20);
@@ -68,8 +83,13 @@ public class TestClient{
         panel.add(SignUpBtn);
 
         logStatusLabel = new JLabel("");
-        logStatusLabel.setBounds(10, 80, 80, 25);
+        logStatusLabel.setBounds(10, 80, 150, 25);
         panel.add(logStatusLabel);
+
+        // ChatPage를 불러올지 아니면 아래 처럼
+        // 로그인 성공 시, 로그인 panel을 false, panel2가 가능한지
+        JTextField inputText = new JTextField();
+        inputText.setBounds(10, 80, 100, 200);
 
         frame.setVisible(true);
 
@@ -77,6 +97,7 @@ public class TestClient{
             @Override
             public void actionPerformed(ActionEvent e) {
                 loginCheck();
+                panel.setVisible(false);
             }
         });
         SignUpBtn.addActionListener(new ActionListener() {
@@ -92,8 +113,8 @@ public class TestClient{
         try{
             this.socket = socket;
             this.username = username;
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = idText.getText();
         } catch(IOException e){
             System.out.println("실패");
@@ -103,7 +124,7 @@ public class TestClient{
     public boolean loginCheck(){
         loginStatus = false;
         try {
-            String path = "C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt";
+            String path = "/Users/lhg/Desktop/j_study/LHG/db/test1.txt";
             TreeMap<String, String> userList = new TreeMap<String, String>();
             File file = new File(path);
             FileReader fr = new FileReader(file);
@@ -119,6 +140,8 @@ public class TestClient{
                     System.out.println("로그인 성공!");
                     loginStatus = true;
                     logStatusLabel.setText("로그인 되었습니다.");
+                    setNickname(nickname);
+//                    JOptionPane.showConfirmDialog(null,JOptionPane.YES_NO_OPTION);
                     break;
                 } else if(id.equals(arr[0]) || passwd.equals(arr[1])){
                     System.out.println("아이디나 패스워드를 확인해주세요.");
@@ -137,41 +160,43 @@ public class TestClient{
     public void sendMessage(){
         try{
             // clientHandler 생성자에서 readLine으로 기다림
-            bufferedWriter.write(username);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+            bw.write(username);
+            bw.newLine();
+            bw.flush();
 
              Scanner sc = new Scanner(System.in);
              while(socket.isConnected()){
                  String messageToSend = sc.nextLine();
-                 bufferedWriter.write(username + ": " + messageToSend);
-                 bufferedWriter.newLine();
-                 bufferedWriter.flush();
+                 bw.write(username + ": " + messageToSend);
+                 bw.newLine();
+                 bw.flush();
              }
         } catch (IOException e){
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeAllSession(socket, br, bw);
         }
     }
-    // 브로드캐스트 메세지 수신
+    // 그룹(브로드캐스트) 메세지 수신을 위한 스레드
     public void listenForMessage(){
-        // 메세지 수신을 위한 스레드
-        // 객체 생성 후, 실행
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String msgFromGroupChat;
                 while(socket.isConnected()) {
                     try{
-                        msgFromGroupChat = bufferedReader.readLine();
-                        System.out.println(msgFromGroupChat);
+                        msgFromGroupChat = br.readLine();
+                        // 입장하였습니다는 처리 X
+                        System.out.println("원문: " + msgFromGroupChat);
+                        // 번역을 위해 ApiFunc에 매개값으로 메세지 전달
+                        ApiFunc apiFunc = new ApiFunc(msgFromGroupChat);
+                        apiFunc.start();
                     } catch (IOException e){
-                        closeEverything(socket, bufferedReader, bufferedWriter);
+                        closeAllSession(socket, br, bw);
                     }
                 }
             }
         }).start();
     }
-    public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
+    public void closeAllSession(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
         try{
             if (bufferedReader != null) bufferedReader.close();
             if (bufferedWriter != null) bufferedWriter.close();
@@ -183,20 +208,21 @@ public class TestClient{
 
     public static void main(String[] args) throws IOException {
         System.out.println("반갑습니다.");
-
+        // 로그인 창 생성
         TestClient client = new TestClient();
         Socket socket = null;
         while(true){
             if(getLoginStatus()==true){
                 socket = new Socket("localhost",1234);
+                // 클라이언트 연결
                 TestClient client2 = new TestClient(socket, idText.getText());
                 client2.listenForMessage();
                 client2.sendMessage();
                 break;
             }
             try {
-                System.out.println(getLoginStatus());
-                Thread.sleep(1000);
+                System.out.println("클라이언트 연결 상태:" + getLoginStatus());
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

@@ -21,7 +21,6 @@ public class TestLogin extends Thread{
     }
 
 
-
     public TestLogin(){
         frame = new JFrame();
         panel = new JPanel();
@@ -68,7 +67,7 @@ public class TestLogin extends Thread{
             public void actionPerformed(ActionEvent e) {
                 // 파일이 존재할 경우
                 try {
-                    String path = "C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt";
+                    String path = "/Users/lhg/Desktop/j_study/LHG/db/test1.txt";
                     TreeMap<String, String> userList = new TreeMap<String, String>();
                     File file = new File(path);
                     FileReader fr = new FileReader(file);
@@ -115,7 +114,7 @@ public class TestLogin extends Thread{
         });
     }
 
-//    public static void main(String[] args) {
-//        LoginPage loginPage = new LoginPage();
-//    }
+    public static void main(String[] args) {
+        LoginPage loginPage = new LoginPage();
+    }
 }

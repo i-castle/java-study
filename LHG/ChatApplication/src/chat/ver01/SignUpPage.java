@@ -13,6 +13,7 @@ public class SignUpPage {
     private static JLabel label;
     private static JButton submit, cancel;
     private static JTextField id;
+    private static JTextField nickname;
     private static JPasswordField passwd;
 
     public SignUpPage(){
@@ -31,15 +32,23 @@ public class SignUpPage {
         panel.add(label);
 
         id = new JTextField();
-        id.setBounds(80, 20, 150, 25);
+        id.setBounds(80, 40, 150, 25);
         panel.add(id);
 
+        label = new JLabel("닉네임");
+        label.setBounds(10, 40, 80, 25);
+        panel.add(label);
+
+        nickname = new JTextField();
+        nickname.setBounds(80, 40, 150, 25);
+        panel.add(nickname);
+
         label = new JLabel("비밀번호");
-        label.setBounds(10, 50, 80, 25);
+        label.setBounds(10, 60, 80, 25);
         panel.add(label);
 
         passwd = new JPasswordField();
-        passwd.setBounds(80, 50, 150, 25);
+        passwd.setBounds(80, 60, 150, 25);
         panel.add(passwd);
 
         submit = new JButton("제출");
@@ -58,7 +67,7 @@ public class SignUpPage {
                 System.out.println("submit clicked");
                 try {
                     TreeMap<String, String> userList = new TreeMap<String, String>();
-                    File file = new File("C:\\Users\\hg146\\OneDrive\\바탕 화면\\j_study\\LHG\\db\\test1.txt");
+                    File file = new File("/Users/lhg/Desktop/j_study/LHG/db/test1.txt");
                     try{
                         FileReader fr = new FileReader(file);
                         BufferedReader reader = new BufferedReader(fr);
@@ -75,7 +84,6 @@ public class SignUpPage {
                             userList.put(id.getText(), passwd.getText());
                             Set set = userList.entrySet();
                             Iterator iterator = set.iterator();
-                            // 라인 단위 출력을 위해 PrintStream 사용
                             FileWriter fw = new FileWriter(file);
                             PrintWriter pw = new PrintWriter(fw);
                             // 바이트 기반, 문자열 기반 둘 다 해도 되는데 뭔 차이?
@@ -102,7 +110,8 @@ public class SignUpPage {
                         userList.put(id.getText(), passwd.getText());
                         wr.write(id.getText() +"/");
                         wr.write(passwd.getText());
-                        System.out.println(id.getText()+ "/" + passwd.getText());
+                        wr.write(nickname.getText());
+                        System.out.println(id.getText()+ "/" + passwd.getText()+ "/" + nickname.getText());
                         wr.flush();
                         wr.close();
                         System.out.println("회원가입 성공");

@@ -7,11 +7,12 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.HashMap;
 public class Trans {
-    private static String clientId, clientSecret;
 
-    public static String post(String apiUrl, Map<String, String> requestHeaders, String text){
+    public static String post(String apiUrl, Map<String, String> requestHeaders, String text, String desLang){
         HttpURLConnection con = connect(apiUrl);
-        String postParams = "source=ko&target=en&text=" + text;
+        // source는 선택한 언어를 넣으면
+        // target은 상대방 언어 감지를 통해서 진행해야 하니 값 받아와서 넣기
+        String postParams = "source="+desLang+"&target=ko&text=" + text;
         try {
             con.setRequestMethod("POST");
             for(Map.Entry<String, String> header :requestHeaders.entrySet()) {

@@ -9,13 +9,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DetectLang {
-    public static void main(String[] args) {
-        String clientId = "sOS1gilSOHAlGQvRIEfZ";
-        String clientSecret = "OVnTkwiZU5";
+//    private static String clientId, clientSecret;
+    private static String msg="";
+    private static String responseStr;
+    public static String getResponseStr() {
+        return responseStr;
+    }
+    public static void setResponseStr(String responseStr) {
+        DetectLang.responseStr = responseStr;
+    }
 
-        String query;
+    public DetectLang(String msg, String clientId, String clientSecret){
+        String query = "";
+        query=msg;
         try {
-            query = URLEncoder.encode("만나서 반갑습니다.", "UTF-8");
+            query = URLEncoder.encode(msg, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("인코딩 실패", e);
         }
@@ -26,10 +34,10 @@ public class DetectLang {
         requestHeaders.put("X-Naver-Client-Secret", clientSecret);
 
         String responseBody = post(apiURL, requestHeaders, query);
-
-        System.out.println(responseBody);
+        String[] arr = responseBody.split("\"");
+        setResponseStr(arr[3]);
+//        System.out.println(arr[3]);
     }
-
     private static String post(String apiUrl, Map<String, String> requestHeaders, String text){
         HttpURLConnection con = connect(apiUrl);
         String postParams =  "query="  + text;

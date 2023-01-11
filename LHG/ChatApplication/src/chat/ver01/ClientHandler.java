@@ -12,8 +12,8 @@ public class ClientHandler implements Runnable{
     // 서버에서 전달되는 socket
     private Socket socket;
     // 메세지 읽음
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
+    private BufferedReader br;
+    private BufferedWriter bw;
     private String clientUsername;
     public ClientHandler(Socket socket){
         try{
@@ -21,30 +21,30 @@ public class ClientHandler implements Runnable{
             this.socket = socket;
             // 스트림을 문자 스트림으로 래핑
             // 서버에서 보내는 것
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             // 클라이언트 메세지 읽음
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // 엔터키 누르면 새 줄을 통해 읽음
-            this.clientUsername = bufferedReader.readLine();
+            this.clientUsername = br.readLine();
             // 클라이언트를 arraylist에 추가하여 클라이언트가 그룹에 참여하고 다른 사용자로부터 메세지 수신 가능
             clientHandlers.add(this);
             broadcastMessage(clientUsername + "가 입장하였습니다.");
         } catch (IOException e){
-            closeEverything(socket, bufferedReader, bufferedWriter);
+            closeEverything(socket, br, bw);
         }
     }
     @Override
     public void run(){
         String messageFromClient;
-        System.out.println(clientUsername);
+        System.out.println(clientUsername+"가 접속하였습니다.");
         while(socket.isConnected()){
             // 메세지를 받을 때까지 계속 기다림으로 스레드에서 실행
             try{
                 // 스레드를 사용하여 애플리케이션의 나머지 부분이 이 코드로 인해 멈춰지지 않도록 함
-                messageFromClient = bufferedReader.readLine();
+                messageFromClient = br.readLine();
                 broadcastMessage(messageFromClient);
             } catch(IOException e){
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                closeEverything(socket, br, bw);
                 break;
             }
         }
@@ -57,12 +57,12 @@ public class ClientHandler implements Runnable{
         for(ClientHandler clientHandler : clientHandlers){
             try{
                 if(!clientHandler.clientUsername.equals(clientUsername)){
-                    clientHandler.bufferedWriter.write(messageToSend);
-                    clientHandler.bufferedWriter.newLine(); // 엔터키랑 동일, 더이상 나로부터 데이터 안 기다림
-                    clientHandler.bufferedWriter.flush();
+                    clientHandler.bw.write(messageToSend);
+                    clientHandler.bw.newLine(); // 엔터키랑 동일, 더이상 나로부터 데이터 안 기다림
+                    clientHandler.bw.flush();
                 }
             } catch(IOException e){
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                closeEverything(socket, br, bw);
             }
         }
     }
@@ -72,7 +72,7 @@ public class ClientHandler implements Runnable{
         broadcastMessage("SERVER:"+clientUsername+"has left the chat!");
     }
 
-    // try-catch 대신 해당 메소드를 통해 리스트에서 클라이언트를 제거하고 소켓, 입출력스트림을 모두 닫음
+    // try-catch 대신 사용, 클라이언트를 제거하고 소켓, 입출력스트림을 모두 닫음
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter){
         removeClientHandler();
         try{
