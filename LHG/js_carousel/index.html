@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style: none;
+        }
+        .wrap {
+            width: 100%;
+            height: 300px;
+        }
+        .prev,
+        .next {
+            width: 100px;
+            height: 100%;
+            float: left;
+            position: relative;
+        }
+        .carousel {
+            margin: 0 50px;
+            width: 300px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            float: left;
+        }
+        .carousel>ul {
+            width: 1300px;
+            animation: none;
+            margin-left: 0;
+        }
+        .carousel>ul>li {
+            float: left;
+        }
+        .carousel>ul>li>img {
+            width: 300px;
+            height: 300px;
+            float: left;
+        }
+        @keyframes fade{
+            from{
+                opacity: 0;
+            }
+            to{
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <button class="prev">이전</button>
+        <div class="carousel">
+            <ul></ul>
+        </div>
+        <button class="next">다음</button>
+    </div>
+    <script type="text/javascript">
+        var carousel = document.querySelector('.carousel');
+        var ul = document.querySelector('.carousel>ul');
+        var li = document.querySelector('.carousel>ul>li');
+        var prevBtn = document.querySelector('.prev');
+        var nextBtn = document.querySelector('.next');
+        // 생성
+        for (var i = 1; i < 5; i++) {
+            var li = document.createElement('li');
+            ul.appendChild(li);
+            var img = document.createElement('img');
+            img.src = 'imgs/img-' + (i) + '.jpg';
+            li.appendChild(img);
+        }
+        var img = document.querySelector('.carousel>ul>li>img');
+        var currentLeft;
+        ul.style.marginLeft=0;
+
+        function initialize(){
+            currentLeft = parseInt(ul.style.marginLeft);
+            ul.style.transition = "none";
+            ul.style.animation = "none";
+        }
+        function funcPrev(){
+            initialize();
+            if(currentLeft==0){
+                ul.style.animation = "fade 1s ease-in-out";
+                ul.style.marginLeft = (currentLeft-900)+"px";
+            } else{
+                ul.style.transition = "all 0.5s ease-in-out";
+                ul.style.marginLeft = (currentLeft+300)+"px"; 
+            }
+        }
+        function funcNext(){
+            initialize();
+            if(currentLeft==-900){
+                ul.style.animation = "fade 1s ease-in-out";
+                ul.style.marginLeft = 0+"px";
+            } else{
+                ul.style.transition = "all 0.5s ease-in-out";
+                ul.style.marginLeft = (currentLeft-300)+"px";
+            }
+        }
+        prevBtn.addEventListener('click', function () {
+            funcPrev()
+        });
+        nextBtn.addEventListener('click', function () {
+            funcNext()
+        });
+
+        var callback = function(){
+            funcNext();
+            setTimeout(callback,3000);
+        }
+        setTimeout(callback,3000);
+    </script>
+</body>
+
+</html>
